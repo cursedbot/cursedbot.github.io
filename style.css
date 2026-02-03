@@ -4,6 +4,14 @@
     box-sizing: border-box;
 }
 
+:root {
+    --glitch-x: 1px;
+    --glitch-y: 1px;
+    --glitch-opacity: 0.35;
+    --glitch-color-a: rgba(255, 64, 96, 0.6);
+    --glitch-color-b: rgba(64, 200, 255, 0.6);
+}
+
 body {
     font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
     background: #0a0a0a;
@@ -50,8 +58,9 @@ header {
     display: inline-block;
     color: #fff;
     position: relative;
-    animation: float3d 6s ease-in-out infinite;
+    animation: float3d 6s ease-in-out infinite, micro-glitch 9s infinite;
     transform-style: preserve-3d;
+    will-change: transform;
     text-shadow:
         0 1px 0 #ccc,
         0 2px 0 #bbb,
@@ -64,12 +73,32 @@ header {
         0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
+.logo-text::before,
+.logo-text::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.logo-text::before {
+    color: var(--glitch-color-a);
+    animation: glitch-layer 10s infinite;
+}
+
+.logo-text::after {
+    color: var(--glitch-color-b);
+    animation: glitch-layer 12s infinite 1.2s;
+}
+
 .logo-dot {
     display: inline-block;
     color: #555;
     font-size: 32px;
     vertical-align: baseline;
-    animation: pulse 3s ease-in-out infinite;
+    animation: pulse 3s ease-in-out infinite, micro-glitch 11s infinite;
 }
 
 @keyframes float3d {
@@ -99,6 +128,62 @@ header {
 .tagline {
     color: #888;
     font-style: italic;
+    display: inline-block;
+    position: relative;
+    animation: text-fuzz 12s infinite;
+}
+
+@keyframes micro-glitch {
+    0%, 92%, 100% {
+        transform: translate(0, 0);
+    }
+    93% {
+        transform: translate(var(--glitch-x), calc(var(--glitch-y) * -1));
+    }
+    94% {
+        transform: translate(calc(var(--glitch-x) * -1), var(--glitch-y));
+    }
+    95% {
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes glitch-layer {
+    0%, 92%, 100% {
+        opacity: 0;
+        transform: translate(0, 0);
+    }
+    93% {
+        opacity: var(--glitch-opacity);
+        transform: translate(1px, -1px);
+    }
+    94% {
+        opacity: var(--glitch-opacity);
+        transform: translate(-1px, 1px);
+    }
+    95% {
+        opacity: 0;
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes text-fuzz {
+    0%, 90%, 100% {
+        text-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    }
+    91% {
+        text-shadow:
+            1px 0 0 rgba(255, 64, 96, 0.35),
+            -1px 0 0 rgba(64, 200, 255, 0.35);
+    }
+    92% {
+        text-shadow:
+            -1px 0 0 rgba(255, 64, 96, 0.35),
+            1px 0 0 rgba(64, 200, 255, 0.35);
+    }
+    93% {
+        text-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    }
 }
 
 /* Bio */
@@ -295,6 +380,16 @@ footer {
         animation: none;
         opacity: 0.7;
     }
+
+    .logo-text::before,
+    .logo-text::after,
+    .tagline {
+        animation: none;
+    }
+
+    body::after {
+        animation: none;
+    }
 }
 
 /* Scanline effect - subtle */
@@ -314,4 +409,14 @@ body::after {
         rgba(0, 0, 0, 0.1) 2px,
         rgba(0, 0, 0, 0.1) 4px
     );
+    animation: scan-drift 18s linear infinite;
+}
+
+@keyframes scan-drift {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 0 48px;
+    }
 }
